@@ -1,6 +1,6 @@
 import os, shutil
 
-def init_copier(blacklist):
+def init_copier(location, blacklist, whitelist):
     def copytree(src, dst):
         for item in os.listdir(src):
             s = os.path.join(src, item)
@@ -9,6 +9,10 @@ def init_copier(blacklist):
             # Don't copy if blacklisted
             if item in blacklist:
                 continue
+
+            # If whitelist required, skip if not in whitelist
+            if location["IsWhitelistRequired"] == 1 and (not item in whitelist):
+                continue            
 
             if os.path.isdir(s):
                 shutil.copytree(s, d, dirs_exist_ok=True)

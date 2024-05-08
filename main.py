@@ -3,52 +3,39 @@ from concurrent.futures import ThreadPoolExecutor
 
 import config
 import printer
+from db import fetch_locations, fetch_blacklist, fetch_whitelist
+from drives import get_destinations
 from utils import init_copier
 
 # Load .env
 config.setup()
 
-#
-# TEMPORARY HARD CODED VALUES
-#       TODO - MOVE THESE INTO DATABASE
-drives = {
-    "C:\\projects\\D",
-    "C:\\projects\\E",
-    "C:\\projects\\F",
-}
-
-locations = [
-    { "name": "Books", "from": "C:\\projects\\C\\Books", "to": 'Books' },
-    { "name": "Comics", "from": "C:\\projects\\C\\Comics", "to": 'Comics' },
-    { "name": "Comics (New)", "from": "C:\\projects\\C\\Comics\\#temp", "to": 'Comics' },
-    { "name": "Videos - Misc", "from": "C:\\projects\\C\\Videos", "to": 'Videos - Misc' },
-    { "name": "Videos - Misc (New)", "from": "C:\\projects\\C\\Videos\\#temp\\Videos - Misc", "to": 'Videos - Misc' },
-    { "name": "Videos", "from": "C:\\projects\\C\\Videos\\#temp", "to": 'Videos' },
-]
-
-blacklist = {
-    '#temp',
-    '# already copied',
-    '# no copy',
-    'Videos - Misc'
-}
-
-#
-# TEMPORARY HARD CODED VALUES
-# 
-
 def start():
     printer.green("Starting MNEMOSYNE...")
 
+    # Gather required information
+    drives = get_destinations()
+    locations = fetch_locations()
+
+    # Have user confirm this is Okay
+    printer.yellow(drives)
+    answer = input("Is it Okay to copy to these drives? (y/n)")
+    if not answer.lower() in ["y","Y"]:
+        printer.red("Exiting MNEMOSYNE...")
+        exit()
+
+    # Iterate locations to copy from
     for location in locations:
-        name = location["name"]
-        source_dir = location["from"]
-        destination_dir = location["to"]
-        
+        name = location["Name"]
+        source_dir = location["SrcPath"]
+        destination_dir = location["DestName"]
+
         # Create real target paths on backup drives
         dest_dirs = [os.path.join(drive, destination_dir) for drive in drives]
         # Create function that will do the copying
-        copytree = init_copier(blacklist)
+        blacklist = [item["Name"] for item in fetch_blacklist(location["Id"])]
+        whitelist = [item["Name"] for item in fetch_whitelist(location["Id"])]
+        copytree = init_copier(location, blacklist, whitelist)
 
         printer.blue(f"Processing {name}...")
         printer.cyan(f"From: {source_dir}")
@@ -64,5 +51,7 @@ def start():
     
     printer.green("MNEMOSYNE finishing...")
 
+# Run the script contents
 if __name__ == "__main__":
     start()
+    
