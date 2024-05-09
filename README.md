@@ -10,7 +10,7 @@ In powershell:
 
 1. Run `python -m venv venv`
 1. Run `venv/Scripts/activate`
-1. Restore packages, `python -m pip install -r requirements.txt`
+1. Restore packages with `python -m pip install -r requirements.txt`
 
 ## How
 
