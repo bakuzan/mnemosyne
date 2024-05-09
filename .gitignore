@@ -8,6 +8,7 @@
 
 # Logs
 **/logs/*.txt
+**/logs/*.log
 
 # database
 *.db

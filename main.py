@@ -19,6 +19,8 @@ def start():
 
     # Have user confirm this is Okay
     printer.yellow(drives)
+    printer.yellow('')
+    
     answer = input("Is it Okay to copy to these drives? (y/n)")
     if not answer.lower() in ["y","Y"]:
         printer.red("Exiting MNEMOSYNE...")
@@ -47,7 +49,7 @@ def start():
         while any(job.running() for job in jobs):
             time.sleep(.25)
 
-        printer.magenta(f"{name} Complete.")
+        printer.magenta(f"{name} Complete.\r\n",)
     
     printer.green("MNEMOSYNE finishing...")
 

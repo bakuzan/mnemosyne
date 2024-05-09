@@ -1,5 +1,14 @@
 import os, shutil
 
+import printer
+
+# Helpers
+def copy_if_newer(src, dst):
+    if not os.path.isfile(dst) or os.path.getmtime(src) > os.path.getmtime(dst):
+        printer.yellow(f"Copying {src} > {dst}...")
+        shutil.copy2(src, dst)
+
+# Copier creator
 def init_copier(location, blacklist, whitelist):
     def copytree(src, dst):
         for item in os.listdir(src):
@@ -15,11 +24,7 @@ def init_copier(location, blacklist, whitelist):
                 continue            
 
             if os.path.isdir(s):
-                shutil.copytree(s, d, dirs_exist_ok=True)
+                shutil.copytree(s, d, dirs_exist_ok=True, copy_function=copy_if_newer)
             else:
                 copy_if_newer(s, d)
     return copytree
-
-def copy_if_newer(src, dst):
-    if not os.path.isfile(dst) or os.path.getmtime(src) > os.path.getmtime(dst):
-        shutil.copy2(src, dst)

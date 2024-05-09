@@ -1,20 +1,27 @@
 from threading import Lock
 
-print_lock = Lock()
+from logger import get_logger
 
+logger = get_logger()
+
+#######################################################
 # Printing with Threading
-
+#######################################################
+print_lock = Lock()
 _print = print  # save original
+
 def print(*args, **kwargs):
     """Prevents concurrent printing."""
     with print_lock:
         _print(*args, **kwargs)
 
-# 
+#######################################################
 
 def custom_pretty_print(d):
     for key, value in d.items():
-        print(f"{key}: {value}")
+        text = f"{key}: {value}"
+        print(text)
+        logger.info(text)
     print()
 
 def coloured(r, g, b, text):
@@ -22,6 +29,7 @@ def coloured(r, g, b, text):
 
 def coloured_print(r, g, b, text):
     print(coloured(r,g,b,text))
+    logger.info(text)
 
 def red(text):
     coloured_print(255,0,0, text)
