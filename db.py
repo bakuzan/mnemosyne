@@ -61,3 +61,16 @@ def fetch_whitelist(locationId):
     cur.execute(
         "SELECT * FROM Whitelist WHERE LocationId IS NULL OR LocationId = ?", (locationId,))
     return cur.fetchall()
+
+
+def fetch_tracked_folders():
+    """
+    Query rows in the Tracking table
+    :return: string[]
+    """
+    database = os.getenv("DATABASE_PATH")
+    conn = create_connection(database)
+
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM Tracking")
+    return cur.fetchall()

@@ -59,3 +59,10 @@ SELECT Id, 'iTunes'
 -- Whitelist
 INSERT INTO Whitelist ('LocationId', 'Name')
 VALUES (0, "");
+
+-- Tracking
+INSERT INTO "Tracking" ("FolderName","OutputPath") 
+VALUES ('Books','C:\<path>\books.txt'),
+ ('Comics','C:\<path>\comics.txt'),
+ ('Manga','C:\<path>\manga.txt'),
+ ('Videos','C:\<path>\videos.txt');

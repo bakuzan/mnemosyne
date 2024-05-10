@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS "Tracking" (
+	"Id"	        	    INTEGER NOT NULL UNIQUE,
+	"FolderName"		    TEXT    NOT NULL UNIQUE,
+	"OutputPath"		    TEXT    NOT NULL UNIQUE,
+	PRIMARY KEY("Id" AUTOINCREMENT)
+);

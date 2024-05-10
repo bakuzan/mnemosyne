@@ -4,7 +4,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 import config
 import printer
-from db import fetch_locations, fetch_blacklist, fetch_whitelist
+from db import fetch_locations, fetch_blacklist, fetch_whitelist, fetch_tracked_folders
 from drives import get_destinations
 from utils import init_copier, format_duration
 
@@ -58,6 +58,20 @@ def start():
         a = time.perf_counter()
         printer.magenta(f"LOOP: {format_duration(a - b)}.\r\n")
 
+    # Copying finished, write out folder contents that you want tracked
+    place = drives[0]
+    tracks = fetch_tracked_folders()
+
+    for track in tracks:
+        output_path = track["OutputPath"]
+        target_path = os.path.join(place, track["FolderName"])
+        items = os.listdir(target_path)
+
+        printer.yellow(f"Writing {output_path}...")
+        with open(output_path, 'w', encoding='utf-8') as file:
+            file.write('\n'.join(items))
+
+    # Wrap up the process
     printer.green("MNEMOSYNE finishing...")
     after = time.perf_counter()
     printer.green(f"  RUNTIME {format_duration(after - before)}.\r\n")
