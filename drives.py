@@ -1,5 +1,6 @@
 import os
 
+
 def get_destinations():
     env = os.getenv("ENV")
     if env == 'Development':

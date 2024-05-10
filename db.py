@@ -1,6 +1,7 @@
 import sqlite3
 import os
 
+
 def create_connection(db_file):
     """
     Create a database connection to the SQLite database specified by db_file
@@ -10,24 +11,27 @@ def create_connection(db_file):
     conn = None
     try:
         conn = sqlite3.connect(db_file)
-        conn.row_factory = sqlite3.Row # Make query results dict rather than tuple
+        conn.row_factory = sqlite3.Row  # Make query results dict rather than tuple
     except IOError as e:
         print(e)
 
-    return conn 
+    return conn
 
-## Fetch queries
+# Fetch queries
+
+
 def fetch_locations():
     """
     Query rows in the Locations table
     :return: Locations[]
-    """   
+    """
     database = os.getenv("DATABASE_PATH")
     conn = create_connection(database)
 
     cur = conn.cursor()
     cur.execute("SELECT * FROM Locations")
     return cur.fetchall()
+
 
 def fetch_blacklist(locationId):
     """
@@ -39,8 +43,10 @@ def fetch_blacklist(locationId):
     conn = create_connection(database)
 
     cur = conn.cursor()
-    cur.execute("SELECT * FROM Blacklist WHERE LocationId IS NULL OR LocationId = ?", (locationId,))
+    cur.execute(
+        "SELECT * FROM Blacklist WHERE LocationId IS NULL OR LocationId = ?", (locationId,))
     return cur.fetchall()
+
 
 def fetch_whitelist(locationId):
     """
@@ -52,5 +58,6 @@ def fetch_whitelist(locationId):
     conn = create_connection(database)
 
     cur = conn.cursor()
-    cur.execute("SELECT * FROM Whitelist WHERE LocationId IS NULL OR LocationId = ?", (locationId,))
+    cur.execute(
+        "SELECT * FROM Whitelist WHERE LocationId IS NULL OR LocationId = ?", (locationId,))
     return cur.fetchall()

@@ -1,17 +1,20 @@
-import os, time
+import os
+import time
 from concurrent.futures import ThreadPoolExecutor
 
 import config
 import printer
 from db import fetch_locations, fetch_blacklist, fetch_whitelist
 from drives import get_destinations
-from utils import init_copier
+from utils import init_copier, format_duration
 
 # Load .env
 config.setup()
 
+
 def start():
     printer.green("Starting MNEMOSYNE...")
+    before = time.perf_counter()
 
     # Gather required information
     drives = get_destinations()
@@ -20,14 +23,15 @@ def start():
     # Have user confirm this is Okay
     printer.yellow(drives)
     printer.yellow('')
-    
+
     answer = input("Is it Okay to copy to these drives? (y/n)")
-    if not answer.lower() in ["y","Y"]:
+    if not answer.lower() in ["y", "Y"]:
         printer.red("Exiting MNEMOSYNE...")
         exit()
 
     # Iterate locations to copy from
     for location in locations:
+        b = time.perf_counter()
         name = location["Name"]
         source_dir = location["SrcPath"]
         destination_dir = location["DestName"]
@@ -44,16 +48,21 @@ def start():
         printer.cyan(f"  To: {'; '.join(dest_dirs)}")
 
         with ThreadPoolExecutor(max_workers=3) as e:
-            jobs = [e.submit(copytree, source_dir, dest_dir) for dest_dir in dest_dirs]
+            jobs = [e.submit(copytree, source_dir, dest_dir)
+                    for dest_dir in dest_dirs]
 
         while any(job.running() for job in jobs):
             time.sleep(.25)
 
-        printer.magenta(f"{name} Complete.\r\n",)
-    
+        printer.magenta(f"{name} Complete.",)
+        a = time.perf_counter()
+        printer.magenta(f"LOOP: {format_duration(a - b)}.\r\n")
+
     printer.green("MNEMOSYNE finishing...")
+    after = time.perf_counter()
+    printer.green(f"  RUNTIME {format_duration(after - before)}.\r\n")
+
 
 # Run the script contents
 if __name__ == "__main__":
     start()
-    
