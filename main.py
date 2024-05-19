@@ -65,7 +65,7 @@ def start():
     for track in tracks:
         output_path = track["OutputPath"]
         target_path = os.path.join(place, track["FolderName"])
-        items = os.listdir(target_path)
+        items = sorted(os.listdir(target_path))
 
         printer.yellow(f"Writing {output_path}...")
         with open(output_path, 'w', encoding='utf-8') as file:
