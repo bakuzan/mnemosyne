@@ -5,7 +5,7 @@ from concurrent.futures import ThreadPoolExecutor
 import config
 import printer
 from db import fetch_locations, fetch_blacklist, fetch_whitelist, fetch_tracked_folders
-from drives import get_destinations
+from drives import get_destinations, filter_drives
 from utils import init_copier, format_duration
 
 # Load .env
@@ -24,8 +24,18 @@ def start():
     printer.yellow(drives)
     printer.yellow('')
 
-    answer = input("Is it Okay to copy to these drives? (y/n)")
-    if not answer.lower() in ["y", "Y"]:
+    answer = input("Is it Okay to copy to these drives? (y:yes/n:no/f:filter)")
+    if answer.lower() == "f":
+        drives = filter_drives(drives)
+        printer.yellow("Drives filtered to: ")
+        printer.yellow(drives)
+        printer.yellow('')
+        answer = "y"
+
+    has_no_drives = len(drives) == 0
+    if has_no_drives or not answer.lower() in ["y", "Y"]:
+        if has_no_drives:
+            printer.yellow("No drives to copy to.")
         printer.red("Exiting MNEMOSYNE...")
         exit()
 
